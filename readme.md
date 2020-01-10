@@ -111,3 +111,43 @@ print ('Yeah, you got it !\nBambooFox{' + cap_flag + '}\n')
 
 ```
 > BambooFox{You_Know_Decompyle_And_Do_Reverse}
+
+## MOVE OR NOT
+### review
+逆向之後 第一關是 98416 
+第二關 爆破比較快 因為他是吃輸入 對 資料做運算 然後call 
+
+### code
+```sh
+#!/usr/bin/expect
+set i 0
+for {set key 0} {$key<=255} {incr key} {
+    
+    spawn  ./pro
+    expect "*password: " {send "98416\r"}
+    expect "*key: " {send "$key\r"}
+    expect "*flag: " { send "Test_flag\r"}
+}
+
+```
+> ./pro.sh|grep -B 1 'flag'
+
+之後挨個ltrace 測試  會發現50 有過
+
+```
+$trace ./pro
+printf("First give me your password: ") = 29
+__isoc99_scanf(0x555555554a06, 0x7fffffffdf28, 0, 0First give me your password: 98416
+) = 1
+printf("Second give me your key: ") = 25
+__isoc99_scanf(0x555555554a06, 0x7fffffffdf28, 0, 0Second give me your key: 50
+) = 1
+printf("Then Verify your flag: ") = 23
+__isoc99_scanf(0x555555554a63, 0x7fffffffdf30, 0, 0Then Verify your flag: 5
+) = 1
+strcmp("BambooFox{dyn4mic_1s_4ls0_gr34t}"..., "5") = 13
+puts("You don't know dynamic analysis "...You don't know dynamic analysis !
+) = 34
++++ exited (status 0) +++
+```
+>  BambooFox{dyn4mic_1s_4ls0_gr34t}
